@@ -7,11 +7,21 @@ const MemoryGame = () => {
   const [solved, setSolved] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [won, setWon] = useState(false);
-  const [moves, setMoves] = useState(0); // 🔥 Move counter state
+  const [moves, setMoves] = useState(0);
 
   const handleGridSizeChange = (e) => {
-    const size = parseInt(e.target.value);
-    if (size >= 2 && size <= 10) setGridSize(size);
+    const value = e.target.value;
+
+    if (value === "") {
+      setGridSize("");
+      return;
+    }
+
+    const size = parseInt(value, 10);
+
+    if (!isNaN(size) && size >= 2 && size <= 10) {
+      setGridSize(size);
+    }
   };
 
   const initializeGame = () => {
@@ -27,7 +37,7 @@ const MemoryGame = () => {
     setFlipped([]);
     setSolved([]);
     setWon(false);
-    setMoves(0); // 🔥 Reset moves on game reset
+    setMoves(0);
   };
 
   useEffect(() => {
@@ -63,7 +73,7 @@ const MemoryGame = () => {
       if (id !== flipped[0]) {
         setFlipped([...flipped, id]);
         checkMatch(id);
-        setMoves(moves + 1); 
+        setMoves(moves + 1);
       } else {
         setFlipped([]);
         setDisabled(false);
@@ -81,27 +91,31 @@ const MemoryGame = () => {
   }, [solved, cards]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-6">Memory Game</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-600 to-indigo-600 p-6 text-white">
+      <h1 className="text-4xl font-bold mb-6 drop-shadow-lg">Memory Game</h1>
 
-      <div className="mb-4">
-        <label htmlFor="gridSize">Grid Size: (max 10)</label>
+    
+      <div className="mb-6">
+        <label htmlFor="gridSize" className="text-lg font-semibold">
+          Grid Size: (2-10)
+        </label>
         <input
-          type="number"
+          type="text"
           id="gridSize"
-          min="2"
-          max="10"
           value={gridSize}
           onChange={handleGridSizeChange}
-          className="border-2 border-gray-300 rounded px-2 py-1"
+          className="border-2 border-white bg-transparent rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white ml-3 text-lg w-16 text-center"
         />
       </div>
 
-     
-      <div className="mb-4 text-xl font-semibold">Moves: {moves}</div>
+      
+      <div className="mb-4 text-xl font-semibold bg-white text-indigo-600 px-4 py-2 rounded shadow-md">
+        Moves: {moves}
+      </div>
 
+    
       <div
-        className="grid gap-2 mb-4"
+        className="grid gap-3 p-3 bg-white/20 backdrop-blur-md rounded-lg shadow-lg"
         style={{
           gridTemplateColumns: `repeat(${gridSize}, minmax(0,1fr))`,
           width: `min(100%,${gridSize * 5.5}rem)`,
@@ -112,12 +126,12 @@ const MemoryGame = () => {
             <div
               key={card.id}
               onClick={() => handleClick(card.id)}
-              className={`aspect-square flex items-center justify-center text-xl font-bold rounded-lg cursor-pointer transition-all duration-300 ${
+              className={`aspect-square flex items-center justify-center text-2xl font-bold rounded-lg cursor-pointer transition-all duration-300 shadow-md transform ${
                 isFlipped(card.id)
                   ? isSolved(card.id)
-                    ? "bg-green-500 text-white"
-                    : "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-400"
+                    ? "bg-green-500 text-white scale-105"
+                    : "bg-blue-500 text-white scale-105"
+                  : "bg-gray-300 text-gray-400 hover:scale-105"
               }`}
             >
               {isFlipped(card.id) ? card.number : "?"}
@@ -126,15 +140,17 @@ const MemoryGame = () => {
         })}
       </div>
 
+  
       {won && (
-        <div className="mt-4 text-4xl font-bold text-green-600 animate-bounce">
+        <div className="mt-6 text-4xl font-bold text-green-400 animate-bounce">
           You Won in {moves} moves! 🎉
         </div>
       )}
 
+  
       <button
         onClick={initializeGame}
-        className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+        className="mt-6 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300 shadow-lg text-lg font-semibold"
       >
         {won ? "Play Again" : "Reset"}
       </button>
